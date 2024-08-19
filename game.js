@@ -120,7 +120,7 @@ let yMap = 31;
 
 // Game state
 let holdingCandle = false;
-let candleRadius = 2.1;
+let candleRadius = 4.4;
 
 function gameLogic () {
 	if (moveDelay > 0) {
@@ -259,12 +259,12 @@ function render () {
 	PS.color(PS.ALL, PS.ALL, 0x000000);
 	candleList.forEach((candle, index) => {
 		//let targetRadius = Math.random() * 2.1 + 1.1;
-		let targetRadius = 2.1 + Math.sin((gameTimer + index * 100) / 100) * 0.6 + Math.random() * 0.4;
+		let targetRadius = 4.1 + Math.sin((gameTimer + index * 100) / 100) * 0.6 + Math.random() * 0.4;
 		candle.radius = candle.radius * 0.95 + targetRadius * 0.05;
 		candleCircle(candle.x, candle.y, candle.radius);
 	});
 	if (holdingCandle) {
-		let targetRadius = 2.1 + Math.sin(gameTimer / 100 + 789) * 0.6 + Math.random() * 0.4;
+		let targetRadius = 4.1 + Math.sin(gameTimer / 100 + 789) * 0.6 + Math.random() * 0.4;
 		candleRadius = candleRadius * 0.95 + targetRadius * 0.05;
 		candleCircle(xPlayer, yPlayer, candleRadius);
 	}
@@ -300,7 +300,7 @@ function updateImportantTiles () {
 			let yTile = Math.floor((index - xTile) / 32);
 			if (tile === 2) {
 				// Candle
-				candleList.push({x: xTile, y: yTile, radius: 2.1});
+				candleList.push({x: xTile, y: yTile, radius: 4.4});
 			}
 		}
 	});
@@ -330,7 +330,19 @@ PS.touch = function(x, y, data, options) {
 	}
 };
 
-let editColors = [0x808080, 0x808080, 0xCCAA80, 0x808080, 0x808080, 0x808080, 0x808080, 0x808080, 0x808080, 0x808080];
+// Nothing, wall, candle, interact point, locked door, trigger point
+let editColors = [
+	0x808080, //Nothing
+	0x808080, //Wall
+	0xEECC80, //Candle
+	0x40DDFF, //Interact Point
+	0xCC80BB, //Locked Door
+	0xEE4050, //Trigger Point
+	0x808080,
+	0x808080,
+	0x808080,
+	0x808080
+];
 function editTile (x, y, num) {
 	if (num === 0) {
 		PS.border(x, y, 0);
@@ -523,21 +535,21 @@ PS.keyDown = function(key, shift, ctrl, options) {
 	else if (key === 51) {
 		// 3
 		if (editMode) {
-			PS.statusText("3 - nothing");
+			PS.statusText("3 - interact point");
 			editNum = 3;
 		}
 	}
 	else if (key === 52) {
 		// 4
 		if (editMode) {
-			PS.statusText("4 - nothing");
+			PS.statusText("4 - locked door");
 			editNum = 4;
 		}
 	}
 	else if (key === 53) {
 		// 5
 		if (editMode) {
-			PS.statusText("5 - nothing");
+			PS.statusText("5 - trigger point");
 			editNum = 5;
 		}
 	}
@@ -740,7 +752,7 @@ let emptyMap = {
 let pathMap = {
 	width: 32, height: 32, pixelSize: 1,
 	text: "This path leads to the haunted house.",
-	darkness: 60,
+	darkness: 20,
 	tile: [
 	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
 	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
@@ -813,8 +825,8 @@ let pathMap = {
 
 let path2Map= {
 	width : 32, height : 32, pixelSize : 1,
-	text: "It's getting darker... I can't give up now.",
-	darkness: 90,
+	text: "I have to hurry. My friend is trapped in there.",
+	darkness: 20,
 	tile: [
 		1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
 		1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
@@ -887,8 +899,8 @@ let path2Map= {
 
 let entranceMap = {
 	width: 32, height: 32, pixelSize: 1,
-	text: "I'm here... I'll go up and knock on the door.",
-	darkness: 120,
+	text: "Here I am... I'll try opening the door. [Spacebar]",
+	darkness: 20,
 	tile: [
 	0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -907,10 +919,10 @@ let entranceMap = {
 	0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0,
-	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+	0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 5, 5, 5, 5, 5, 5, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0,
+	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
 	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
 	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
 	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
@@ -961,8 +973,8 @@ let entranceMap = {
 
 let centerMap = {
 	width : 32, height : 32, pixelSize : 1,
-	text: "I'm in the haunted house. It's very dark.",
-	darkness: 150,
+	text: "I'm in the haunted house. It's very dark, but the candles help.",
+	darkness: 120,
 	tile: [
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -1036,7 +1048,7 @@ let centerMap = {
 let leftMap = {
 	width : 32, height : 32, pixelSize : 1,
 	text: "A small desk and some storage.",
-	darkness: 150,
+	darkness: 120,
 	tile: [
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -1110,7 +1122,7 @@ let leftMap = {
 let diningMap = {
 	width : 32, height : 32, pixelSize : 1,
 	text: "A dining table and some chairs.",
-	darkness: 150,
+	darkness: 120,
 	tile: [
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0,
@@ -1184,7 +1196,7 @@ let diningMap = {
 let kitchenMap = {
 	width : 32, height : 32, pixelSize : 1,
 	text: "This must be the kitchen.",
-	darkness: 150,
+	darkness: 120,
 	tile: [
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
