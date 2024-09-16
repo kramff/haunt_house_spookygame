@@ -90,6 +90,12 @@ function erase () {
 	}
 	PS.gridPlane(1);
 	PS.alpha(xPlayer, yPlayer, 0);
+	// Erase other entities
+	if (currentMap.entities !== undefined) {
+		currentMap.entities.forEach(entity => {
+			PS.alpha(entity.x, entity.y, 0);
+		});
+	}
 	if (needToUpdateMusic) {
 		updateMusic();
 	}
@@ -324,6 +330,22 @@ function render () {
 	PS.gridPlane(1);
 	PS.alpha(xPlayer, yPlayer, 255);
 	PS.color(xPlayer, yPlayer, PLAYER_COLOR);
+	// Draw other entities
+	if (currentMap.entities !== undefined) {
+		currentMap.entities.forEach(entity => {
+			let shouldDrawEntity = true;
+			if (entity.hiddenWhenDark) {
+				let darknessState = darknessMap[entity.x + entity.y * 32];
+				if (darknessState === true) {
+					shouldDrawEntity = false;
+				}
+			}
+			if (shouldDrawEntity) {
+				PS.alpha(entity.x, entity.y, 255);
+				PS.color(entity.x, entity.y, entity.color);
+			}
+		});
+	}
 	// Candles in "shadow" layer above the base plane
 	updateDarkness();
 }
@@ -1342,6 +1364,7 @@ let diningMap = {
 };
 
 let sawKeyInSink = false;
+let gotKey = false;
 
 let kitchenMap = {
 	width : 32, height : 32, pixelSize : 1,
@@ -1364,7 +1387,13 @@ let kitchenMap = {
 	},
 	interactFunction: () => {
 		sawKeyInSink = true;
-		PS.statusText("There's a key in the sink drain but I can't reach it.");
+		if (gotMagnet) {
+			gotKey = true;
+			PS.statusText("I used the magnet to get a key from the sink drain.");
+		}
+		else {
+			PS.statusText("There's a key in the sink drain but I can't reach it.");
+		}
 	},
 	tile: [
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -1577,15 +1606,16 @@ let gardenMap = {
 	interactFunction: () => {
 		gotMagnet = true;
 		PS.statusText("I picked up a small magnet.");
+		gardenMap.entities.pop();
 	},
 	tile: [
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-	1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1,
-	1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1,
-	1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1,
-	1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1,
-	1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1,
+	1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 1, 1,
+	1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 3, 3, 3, 5, 1, 1,
+	1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 5, 3, 3, 3, 5, 1, 1,
+	1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 5, 3, 3, 3, 5, 1, 1,
+	1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5, 1, 1,
 	1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1,
 	1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 	1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -1654,6 +1684,7 @@ let stairs2Map = {
 	darkness: 120,
 	area: "second",
 	triggerFunction: () => {
+		// Go down stairs
 		if (xPlayer >= 28) {
 			xMap = 8;
 			yMap = 27;
