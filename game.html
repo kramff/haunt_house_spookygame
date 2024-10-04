@@ -41,6 +41,20 @@ along with the Perlenspiel devkit. If not, see <http://www.gnu.org/licenses/>.
 			justify-content: center;
 			align-content: center;
 		}
+		#threejs_container {
+			position: absolute;
+			left: 0;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			z-index: 20;
+			pointer-events: none;
+		}
+		.threejs_canvas {
+			position: absolute;
+			image-rendering: pixelated;
+			opacity: 0;
+		}
 	</style>
 </head>
 <body onload="PS._sys(0x050505, 0xFFFFFF, 'Welcome to the haunted house.');">
@@ -81,6 +95,7 @@ along with the Perlenspiel devkit. If not, see <http://www.gnu.org/licenses/>.
 	Altering this .html file, or its accompanying .png and .js files, IN ANY WAY other than the methods explicitly described
 	in the above comments can result in unpredictable engine behavior and/or breakage, and is a grievous violation of The Rules.
 	-->
+	<div id="threejs_container"></div>
 	<script type="text/javascript" src="game.js"></script>
 	<script type="module" src="game_3d.js"></script>
 </body>

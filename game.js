@@ -123,10 +123,6 @@ let candleRadius = 4.4;
 let entryDoorLocked = true;
 
 // Reach the 2nd floor
-let catJumpedOut = false;
-let foundHidingSpot = false;
-let gotCoatHanger = false;
-let gotSinkKey = false;
 let stairsDoorLocked = true;
 
 function gameLogic () {
@@ -1293,6 +1289,18 @@ let diningMap = {
 	text: "A dining table and some chairs.",
 	darkness: 120,
 	area: "first",
+	lockedDoorFunction: () => {
+		return stairsDoorLocked;
+	},
+	interactFunction: () => {
+		if (!gotKey) {
+			PS.statusText("It's locked, I need a key.");
+			return;
+		}
+		stairsDoorLocked = false;
+		PS.statusText("I used the key to unlock the door");
+		PS.audioLoad("door_open", {autoplay: true, volume: 0.4, path: "audio/"});
+	},
 	tile: [
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0,
@@ -1390,6 +1398,7 @@ let kitchenMap = {
 		if (gotMagnet) {
 			gotKey = true;
 			PS.statusText("I used the magnet to get a key from the sink drain.");
+			kitchenMap.entities.pop();
 		}
 		else {
 			PS.statusText("There's a key in the sink drain but I can't reach it.");
