@@ -38,7 +38,7 @@ function animate () {
 	//renderBuffer = new ArrayBuffer(32 * 32 * 3);
 	//renderer.readRenderTargetPixels(renderTarget, 0, 0, 32, 32, renderBuffer)
 }
-//renderer.setAnimationLoop(animate);
+renderer.setAnimationLoop(animate);
 
 function resizeFor3D () {
 	let grid = document.getElementById("grid");
