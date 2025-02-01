@@ -130,6 +130,9 @@ let entryDoorLocked = true;
 let stairsDoorLocked = true;
 
 function gameLogic () {
+	if (preparingToGo3D) {
+		return;
+	}
 	if (moveDelay > 0) {
 		moveDelay -= 1;
 	}
@@ -743,8 +746,15 @@ PS.keyDown = function(key, shift, ctrl, options) {
 		// xMap = 7;
 		// yMap = 28;
 		// Second floor landing
-		xMap = 8;
-		yMap = 21;
+		//xMap = 8;
+		//yMap = 21;
+		// Basement
+		xMap = 9;
+		yMap = 27;
+		PS.gridPlane(1);
+		PS.alpha(xPlayer, yPlayer, 0);
+		xPlayer = 10;
+		yPlayer = 18;
 		changeMap();
 		holdingFlashlight = true;
 	}
@@ -2335,9 +2345,11 @@ let basementMap = {
 			preparingToGo3D = true;
 			basementMap.darkness = 255;
 			needToResetDarkness = true;
+			transitionInto3D();
 		}
 		else if (xPlayer === 30) {
 			// xPlayer === 30 -> Second trigger for the character to say "I'm not going back in there now, lets just leave!"
+			// after the 3d section is over
 		}
 	},
 	tile: [
