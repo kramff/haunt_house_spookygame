@@ -10,11 +10,46 @@ let renderSize = 32;
 document.getElementById("threejs_container").appendChild(renderer.domElement);
 renderer.domElement.classList.add("threejs_canvas");
 
-const geometry = new THREE.BoxGeometry(1, 1, 1);
-const material = new THREE.MeshBasicMaterial({color: 0xcc2200});
-const cube = new THREE.Mesh(geometry, material);
-scene.add(cube);
-camera.position.z = 2;
+const ambientLight = new THREE.AmbientLight(0x404040);
+scene.add(ambientLight);
+
+const spotLight = new THREE.SpotLight(0xffffff, 1, 50, Math.PI * 0.1, 0.5, 0.1);
+spotLight.castShadow = true;
+spotLight.shadow.mapSize.width = 1024;
+spotLight.shadow.mapSize.height = 1024;
+spotLight.shadow.camera.near = 500;
+spotLight.shadow.camera.far = 4000;
+spotLight.shadow.camera.fov = 30;
+
+scene.add(camera);
+//camera.position.z = 4;
+camera.add(spotLight);
+camera.add(spotLight.target);
+spotLight.target.position.z = -5;
+
+const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
+let mats = [
+	new THREE.MeshToonMaterial({color: 0xcc2200}),
+	new THREE.MeshToonMaterial({color: 0x00cc22}),
+	new THREE.MeshToonMaterial({color: 0x2200cc}),
+	new THREE.MeshToonMaterial({color: 0xaa0077}),
+	new THREE.MeshToonMaterial({color: 0x77aa00}),
+	new THREE.MeshToonMaterial({color: 0x0077aa}),
+];
+
+let cubes = mats.map(mat => new THREE.Mesh(boxGeometry, mat));
+cubes.forEach((cube, index) => {
+	scene.add(cube)
+	cube.position.x = index * 1.4;
+	cube.position.z = index * 0.3 - 4;
+	if (index === 2) {
+		cube.position.z = 5;
+	}
+	if (index === 4) {
+		cube.position.z = 6;
+	}
+});
+
 /*
 let renderTarget = new THREE.WebGLRenderTarget(32, 32);
 window["renderTarget"] = renderTarget;
@@ -53,17 +88,23 @@ function animate () {
 		renderer.setSize(Math.round(renderSize), Math.round(renderSize));
 		resizeFor3D();
 	}
-	let rot = camera.rotation.y;
+	//let rot = camera.rotation.y;
+	let rot = xCameraRotation;
 	let xDeltaAdj = xDelta * Math.cos(rot) + yDelta * Math.sin(rot);
 	let yDeltaAdj = yDelta * Math.cos(rot) - xDelta * Math.sin(rot);
 	if (xDelta !== 0 && yDelta !== 0) {
 		xDeltaAdj *= 0.707;
 		yDeltaAdj *= 0.707;
 	}
-	camera.position.x += xDeltaAdj * 0.001 * deltaTime;
-	camera.position.z += yDeltaAdj * 0.001 * deltaTime;
-	//cube.rotation.x += 0.01;
-	//cube.rotation.y += 0.01;
+	if (in3DMode) {
+		camera.position.x += xDeltaAdj * 0.001 * deltaTime;
+		camera.position.z += yDeltaAdj * 0.001 * deltaTime;
+
+		//camera.rotation.x = yCameraRotation;
+		camera.rotation.y = xCameraRotation;
+	}
+	//cube.rotation.x += 0.0001;
+	//cube.rotation.y += 0.0001;
 	//renderer.setRenderTarget(null);
 	renderer.render(scene, camera);
 
@@ -127,7 +168,23 @@ function clickFunc () {
 	}
 }
 
+let xCameraRotation = 0;
+let yCameraRotation = 0;
 function mouseMoveFunc (e) {
-	camera.rotation.y -= e.movementX * 0.001;
-	camera.rotation.x -= e.movementY * 0.001;
+	xCameraRotation -= e.movementX * 0.001;
+	yCameraRotation -= e.movementY * 0.001;
+	if (xCameraRotation > 2 * Math.PI) {
+		xCameraRotation -= 2 * Math.PI;
+	}
+	else if (xCameraRotation < 0) {
+		xCameraRotation += 2 * Math.PI;
+	}
+	if (yCameraRotation > Math.PI) {
+		yCameraRotation = Math.PI;
+	}
+	else if (yCameraRotation < -1 * Math.PI) {
+		yCameraRotation = -1 * Math.PI;
+	}
+	//camera.rotation.y -= e.movementX * 0.001;
+	//camera.rotation.x -= e.movementY * 0.001;
 }
